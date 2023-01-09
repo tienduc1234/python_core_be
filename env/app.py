@@ -2,27 +2,30 @@ from flask import Flask, jsonify, request
 from flaskext.mysql import MySQL
 from flask_restful import Resource, Api
 from flask_cors import CORS
-# Khởi tạo  Flask
+""" Khởi tạo  Flask"""
 app = Flask(__name__)
 CORS(app)
-# Khởi tạo MySQL
+""" Khởi tạo MySQL"""
 mysql = MySQL()
 
-# Khởi tạo Flask RESTful API
+""" Khởi tạo Flask RESTful API"""
 api = Api(app)
 
-# Kết nối cơ sở dữ liệu với backend
+""" Kết nối cơ sở dữ liệu với backend"""
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_DB'] = 'tienduc'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
-# Khởi tạo MySQL extension
+""" Khởi tạo MySQL extension"""
 mysql.init_app(app)
 
 
 
 class WardList(Resource):
+    """
+        output: Lấy ra tất cả phường, tạo phường.
+    """
     #Lấy tất cả Phường 
     def get(self):
         try:
@@ -62,6 +65,10 @@ class WardList(Resource):
 
 
 class Ward(Resource):
+    """
+        input: ward_id.
+        output: Lấy ra phường theo id, chỉnh sửa phường theo id, xoá phường theo id.
+    """
     # Lấy phường theo id
     def get(self, ward_id):
         try:
@@ -121,6 +128,9 @@ class Ward(Resource):
 
 
 class PlaceList(Resource):
+    """
+        output: Lấy ra tất cả địa điểm, tạo địa điểm mới.
+    """
     # Lấy tất cả địa điểm
     def get(self):
         try:
@@ -146,7 +156,7 @@ class PlaceList(Resource):
             _map = str(request.form['map'])
             _wardId = int(request.form['wardId'])
             _type = int(request.form['type'])
-            create_class_cmd = """INSERT INTO `place`( `name`, `description`, `address`,`map`,`wardId`,`type`) VALUES (%s,%s,%s,%s,%s,,%s)"""
+            create_class_cmd = """INSERT INTO `place`( `name`, `description`, `address`,`map`,`wardId`,`type`) VALUES (%s,%s,%s,%s,%s,%s)"""
             cursor.execute(create_class_cmd, (
                 _name, _description, _address,_map,_wardId,_type))
             conn.commit()
@@ -165,6 +175,10 @@ class PlaceList(Resource):
 
 
 class Place(Resource):
+    """
+        input: Place_id.
+        output: Lấy ra địa điểm theo id, Cập nhật địa điểm theo id, Xoá địa điểm theo id.
+    """
     # lấy địa điểm theo id
     def get(self, place_id):
         try:
@@ -226,12 +240,12 @@ class Place(Resource):
             return (response)
 
 
-# Danh sách routers
+""" Danh sách routers"""
 api.add_resource(WardList, '/wards', endpoint='wards')
 api.add_resource(Ward, '/ward/<int:ward_id>', endpoint='ward')
 api.add_resource(PlaceList, '/places', endpoint='places')
 api.add_resource(Place, '/place/<int:place_id>', endpoint='place')
 
-#Chạy applications
+"""Chạy applications"""
 if __name__ == "__main__":
     app.run(debug=True)
